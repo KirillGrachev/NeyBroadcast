@@ -1,0 +1,10 @@
+name: NeyBroadcast
+version: '${project.version}'
+main: com.ney.neybroadcast.NeyBroadcast
+api-version: 1.16
+commands:
+  ad:
+    aliases: [advertising]
+  bc:
+    aliases: [broadcast]
+  buy: {}
