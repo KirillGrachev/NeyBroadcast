@@ -1,0 +1,110 @@
+# _   _            ____                      _               _
+#| \ | | ___ _   _| __ ) _ __ ___   __ _  __| | ___ __ _ ___| |_
+#|  \| |/ _ \ | | |  _ \| '__/ _ \ / _` |/ _` |/ __/ _` / __| __|
+#| |\  |  __/ |_| | |_) | | | (_) | (_| | (_| | (_| (_| \__ \ |_
+#|_| \_|\___|\__, |____/|_|  \___/ \__,_|\__,_|\___\__,_|___/\__|
+#            |___/
+
+# Разработчик - https://vk.com/k_gra4ev
+# Права: ney_broadcast.ad, ney_broadcast.buy, ney_broadcast.bc
+
+Settings:
+  enabled: true #Работают ли объявления
+
+Messages: #Поддерживается HEX
+
+  no_console:
+    text: "&#fb9700&lN&#fb9404&le&#fb9108&ly&#fc8f0c&lB&#fc8c10&lr&#fc8914&lo&#fc8619&la&#fc831d&ld&#fc8021&lc&#fd7e25&la&#fd7b29&ls&#fd782d&lt &7» &cЭту команду можно использовать только от имени игрока!"
+
+  no_permission:
+    text: "&#fb9700&lN&#fb9404&le&#fb9108&ly&#fc8f0c&lB&#fc8c10&lr&#fc8914&lo&#fc8619&la&#fc831d&ld&#fc8021&lc&#fd7e25&la&#fd7b29&ls&#fd782d&lt &7» &cУ вас нет прав!"
+
+  bc:
+    enabled: true
+
+    money:
+      enabled: false #Включена ли оплата за отправку объявления
+      count: 0 #Сколько денег будет снято через Vault после отправки объявления
+      text:
+        - "&#fb9700&lN&#fb9404&le&#fb9108&ly&#fc8f0c&lB&#fc8c10&lr&#fc8914&lo&#fc8619&la&#fc831d&ld&#fc8021&lc&#fd7e25&la&#fd7b29&ls&#fd782d&lt &7» &fС вашего баланса было списано {count} монет!"
+      dont_have:
+        text:
+          - "&#fb9700&lN&#fb9404&le&#fb9108&ly&#fc8f0c&lB&#fc8c10&lr&#fc8914&lo&#fc8619&la&#fc831d&ld&#fc8021&lc&#fd7e25&la&#fd7b29&ls&#fd782d&lt &7» &fНа вашем балансе недостаточно монет!"
+
+    size: 90
+    text:
+      - '&c'
+      - '&c &7[&#ff4242ОБЪЯВЛЕНИЕ&7] &fАвтор: &b%player% '
+      - '&c &fТекст &7» &c%message%'
+      - '&c'
+    usage:
+      text:
+        - "&#fb9700&lN&#fb9404&le&#fb9108&ly&#fc8f0c&lB&#fc8c10&lr&#fc8914&lo&#fc8619&la&#fc831d&ld&#fc8021&lc&#fd7e25&la&#fd7b29&ls&#fd782d&lt &7» &fИспользуйте - &e<bc/broadcast> [текст]"
+    and:
+      text:
+        - "&#fb9700&lN&#fb9404&le&#fb9108&ly&#fc8f0c&lB&#fc8c10&lr&#fc8914&lo&#fc8619&la&#fc831d&ld&#fc8021&lc&#fd7e25&la&#fd7b29&ls&#fd782d&lt &7» &cНельзя создавать объявления, которые содержат символ &"
+    sound:
+      enabled: true
+      type: BLOCK_NOTE_BLOCK_HAT
+      volume: 0.7
+      pitch: 1.0
+
+  ad:
+    enabled: true
+
+    money:
+      enabled: true #Включена ли оплата за отправку объявления
+      count: 1500 #Сколько денег будет снято через Vault после отправки объявления
+      text:
+        - "&#fb9700&lN&#fb9404&le&#fb9108&ly&#fc8f0c&lB&#fc8c10&lr&#fc8914&lo&#fc8619&la&#fc831d&ld&#fc8021&lc&#fd7e25&la&#fd7b29&ls&#fd782d&lt &7» &fС вашего баланса было списано {count} монет!"
+      dont_have:
+        text:
+          - "&#fb9700&lN&#fb9404&le&#fb9108&ly&#fc8f0c&lB&#fc8c10&lr&#fc8914&lo&#fc8619&la&#fc831d&ld&#fc8021&lc&#fd7e25&la&#fd7b29&ls&#fd782d&lt &7» &fНа вашем балансе недостаточно монет!"
+
+    size: 90
+    text:
+      - '&c'
+      - '&c &7[&#63ffefРЕКЛАМА&7] &fАвтор: &b%player% '
+      - '&c &fТекст &7» &c%message%'
+      - '&c'
+    usage:
+      text:
+        - "&#fb9700&lN&#fb9404&le&#fb9108&ly&#fc8f0c&lB&#fc8c10&lr&#fc8914&lo&#fc8619&la&#fc831d&ld&#fc8021&lc&#fd7e25&la&#fd7b29&ls&#fd782d&lt &7» &fИспользуйте - &e<ad/advertising> [текст]"
+    and:
+      text:
+        - "&#fb9700&lN&#fb9404&le&#fb9108&ly&#fc8f0c&lB&#fc8c10&lr&#fc8914&lo&#fc8619&la&#fc831d&ld&#fc8021&lc&#fd7e25&la&#fd7b29&ls&#fd782d&lt &7» &cНельзя создавать объявления, которые содержат символ &"
+    sound:
+      enabled: true
+      type: BLOCK_NOTE_BLOCK_HAT
+      volume: 0.7
+      pitch: 1.0
+
+  buy:
+    enabled: true
+
+    money:
+      enabled: true #Включена ли оплата за отправку объявления
+      count: 2000 #Сколько денег будет снято через Vault после отправки объявления
+      text:
+        - "&#fb9700&lN&#fb9404&le&#fb9108&ly&#fc8f0c&lB&#fc8c10&lr&#fc8914&lo&#fc8619&la&#fc831d&ld&#fc8021&lc&#fd7e25&la&#fd7b29&ls&#fd782d&lt &7» &fС вашего баланса было списано {count} монет!"
+      dont_have:
+        text:
+          - "&#fb9700&lN&#fb9404&le&#fb9108&ly&#fc8f0c&lB&#fc8c10&lr&#fc8914&lo&#fc8619&la&#fc831d&ld&#fc8021&lc&#fd7e25&la&#fd7b29&ls&#fd782d&lt &7» &fНа вашем балансе недостаточно монет!"
+
+    size: 90
+    text:
+      - '&c'
+      - '&c &7[&#8642fcПОКУПКА&7] &fАвтор: &b%player% '
+      - '&c &fТекст &7» &c%message%'
+      - '&c'
+    usage:
+      text:
+        - "&#fb9700&lN&#fb9404&le&#fb9108&ly&#fc8f0c&lB&#fc8c10&lr&#fc8914&lo&#fc8619&la&#fc831d&ld&#fc8021&lc&#fd7e25&la&#fd7b29&ls&#fd782d&lt &7» &fИспользуйте - &e/<bc/broadcast> [текст]"
+    and:
+      text:
+        - "&#fb9700&lN&#fb9404&le&#fb9108&ly&#fc8f0c&lB&#fc8c10&lr&#fc8914&lo&#fc8619&la&#fc831d&ld&#fc8021&lc&#fd7e25&la&#fd7b29&ls&#fd782d&lt &7» &cНельзя создавать объявления, которые содержат символ &"
+    sound:
+      enabled: true
+      type: BLOCK_NOTE_BLOCK_HAT
+      volume: 0.7
+      pitch: 1.0

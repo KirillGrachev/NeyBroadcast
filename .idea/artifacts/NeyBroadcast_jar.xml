@@ -1,0 +1,8 @@
+<component name="ArtifactManager">
+  <artifact type="jar" name="NeyBroadcast:jar">
+    <output-path>$PROJECT_DIR$/out/artifacts/NeyBroadcast_jar</output-path>
+    <root id="archive" name="NeyBroadcast.jar">
+      <element id="module-output" name="NeyBroadcast" />
+    </root>
+  </artifact>
+</component>
