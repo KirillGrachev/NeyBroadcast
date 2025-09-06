@@ -1,10 +1,16 @@
 name: NeyBroadcast
 version: '${project.version}'
-main: com.ney.neybroadcast.NeyBroadcast
-api-version: 1.16
+main: com.ney.broadcast.NeyBroadcast
+api-version: 1.13
 commands:
   ad:
+    description: Send an advertisement message to all players
+    usage: /<command> <message>
     aliases: [advertising]
   bc:
+    description: Send a global broadcast message
+    usage: /<command> <message>
     aliases: [broadcast]
-  buy: {}
+  buy:
+    description: Announce a purchase message to all players
+    usage: /<command> <message>
