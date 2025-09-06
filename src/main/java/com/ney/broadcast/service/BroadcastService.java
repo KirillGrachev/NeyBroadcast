@@ -54,7 +54,7 @@ public class BroadcastService {
 
         if (message.contains("&") || message.contains("§")) {
 
-            player.sendMessage(color(config.getAndTextKey(command)));
+            player.sendMessage(color(config.getColorCodeTextKey(command)));
             return;
 
         }
@@ -62,7 +62,11 @@ public class BroadcastService {
         int maxSize = config.getMaxSize(command);
         if (message.length() > maxSize) {
 
-            player.sendMessage(color(config.getNoPermissionKey()));
+            String tooLargeMsg = color(config.getTooLargeKey().replace(
+               "{length}", String.valueOf(config.getMaxSize(command))
+            ));
+
+            player.sendMessage(tooLargeMsg);
             return;
 
         }
