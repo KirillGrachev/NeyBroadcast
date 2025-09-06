@@ -18,6 +18,7 @@ public class ConfigManager {
     private static final String PATH_MSG_NO_CONSOLE = "messages.no_console";
     private static final String PATH_MSG_NO_PERMISSION = "messages.no_permission";
     private static final String PATH_MSG_COLOR_CODE = "messages.contains_color_code";
+    private static final String PATH_MSG_TOO_LARGE = "messages.too_large";
 
     private static final String PATH_BC_PERMISSION = "commands.bc.permission";
     private static final String PATH_BC_MAX_LENGTH = "commands.bc.max_length";
@@ -55,7 +56,7 @@ public class ConfigManager {
     private static final String PATH_BUY_MSG_INSUFFICIENT = "commands.buy.messages.insufficient_funds";
     private static final String PATH_BUY_MSG_SUCCESS = "commands.buy.messages.payment_success";
 
-    private String msgNoConsole, msgNoPermission, msgColorCode;
+    private String msgNoConsole, msgNoPermission, msgColorCode, msgTooLarge;
 
     private double bcCost, adCost, buyCost;
     private int bcSize, adSize, buySize;
@@ -91,9 +92,10 @@ public class ConfigManager {
 
     private void cacheConfigValues() {
 
-        msgNoConsole = HexColorUtil.color(config.getString(PATH_MSG_NO_CONSOLE, "&cТолько для игроков!"));
-        msgNoPermission = HexColorUtil.color(config.getString(PATH_MSG_NO_PERMISSION, "&cНет прав!"));
-        msgColorCode = HexColorUtil.color(config.getString(PATH_MSG_COLOR_CODE, "&cЗапрещены символы & и §"));
+        msgNoConsole = HexColorUtil.color(config.getString(PATH_MSG_NO_CONSOLE, "&cЭту команду можно использовать только от имени игрока!"));
+        msgNoPermission = HexColorUtil.color(config.getString(PATH_MSG_NO_PERMISSION, "&cУ вас нет прав на использование этой команды!"));
+        msgColorCode = HexColorUtil.color(config.getString(PATH_MSG_COLOR_CODE, "&cНельзя использовать символы & или § в сообщении!"));
+        msgTooLarge = HexColorUtil.color(config.getString(PATH_MSG_TOO_LARGE, "&cСообщение не должно быть более {length} симв."));
 
         bcPermission = config.getString(PATH_BC_PERMISSION, "ney_broadcast.bc");
         bcSize = config.getInt(PATH_BC_MAX_LENGTH, 90);
@@ -220,7 +222,7 @@ public class ConfigManager {
         };
     }
 
-    public String getAndTextKey(@NotNull String command) {
+    public String getColorCodeTextKey(@NotNull String command) {
         return msgColorCode;
     }
 
@@ -244,6 +246,10 @@ public class ConfigManager {
 
     public String getNoPermissionKey() {
         return msgNoPermission;
+    }
+
+    public String getTooLargeKey() {
+        return msgTooLarge;
     }
 
     public String getNoConsoleKey() {
