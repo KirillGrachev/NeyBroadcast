@@ -38,7 +38,7 @@ public final class NeyBroadcast extends JavaPlugin {
         BroadcastService broadcastService = new BroadcastService(configManager, economy);
         BroadcastCommand commands = new BroadcastCommand(broadcastService);
 
-        TabCompleter tabCompleter = new TabCompleter(configManager);
+        TabCompleter tabCompleter = new TabCompleter();
 
         registerBroadcastCommands(new String[] {"bc", "ad", "buy"},
                 commands, tabCompleter);
