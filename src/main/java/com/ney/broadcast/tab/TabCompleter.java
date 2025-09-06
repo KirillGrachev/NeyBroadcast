@@ -1,6 +1,5 @@
 package com.ney.broadcast.tab;
 
-import com.ney.broadcast.config.ConfigManager;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
 import org.jetbrains.annotations.NotNull;
@@ -12,21 +11,11 @@ import java.util.List;
 
 public class TabCompleter implements org.bukkit.command.TabCompleter {
 
-    private final ConfigManager config;
-
-    public TabCompleter(@NotNull ConfigManager config) {
-        this.config = config;
-    }
-
     @Override
     public @Nullable List<String> onTabComplete(@NotNull CommandSender sender,
                                                 @NotNull Command command,
                                                 @NotNull String alias,
                                                 @NotNull String[] args) {
-
-        if (!config.isEnabled()) {
-            return null;
-        }
 
         String commandName = command.getName().toLowerCase();
         if (!Arrays.asList("bc", "ad", "buy").contains(commandName)) {
