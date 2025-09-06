@@ -3,6 +3,7 @@
     <output-path>$PROJECT_DIR$/out/artifacts/NeyBroadcast_jar</output-path>
     <root id="archive" name="NeyBroadcast.jar">
       <element id="module-output" name="NeyBroadcast" />
+      <element id="extracted-dir" path="$USER_HOME$/Downloads/Vault-1.7.4.jar" path-in-jar="/" />
     </root>
   </artifact>
 </component>

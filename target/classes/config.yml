@@ -5,106 +5,92 @@
 #|_| \_|\___|\__, |____/|_|  \___/ \__,_|\__,_|\___\__,_|___/\__|
 #            |___/
 
-# Разработчик - https://vk.com/k_gra4ev
+# Разработчик - https://t.me/NeyOff
 # Права: ney_broadcast.ad, ney_broadcast.buy, ney_broadcast.bc
 
-Settings:
-  enabled: true #Работают ли объявления
+# Включает или отключает работу всех команд плагина
+enabled: true
 
-Messages: #Поддерживается HEX
+# Общие сообщения (глобальные для всех команд)
+messages:
+  no_console: "&cЭту команду можно использовать только от имени игрока!"
+  no_permission: "&cУ вас нет прав на использование этой команды!"
+  contains_color_code: "&cНельзя использовать символы & или § в сообщении!"
 
-  no_console:
-    text: "&#fb9700&lN&#fb9404&le&#fb9108&ly&#fc8f0c&lB&#fc8c10&lr&#fc8914&lo&#fc8619&la&#fc831d&ld&#fc8021&lc&#fd7e25&la&#fd7b29&ls&#fd782d&lt &7» &cЭту команду можно использовать только от имени игрока!"
-
-  no_permission:
-    text: "&#fb9700&lN&#fb9404&le&#fb9108&ly&#fc8f0c&lB&#fc8c10&lr&#fc8914&lo&#fc8619&la&#fc831d&ld&#fc8021&lc&#fd7e25&la&#fd7b29&ls&#fd782d&lt &7» &cУ вас нет прав!"
+# Настройки для каждой команды
+commands:
 
   bc:
-    enabled: true
 
-    money:
-      enabled: false #Включена ли оплата за отправку объявления
-      count: 0 #Сколько денег будет снято через Vault после отправки объявления
-      text:
-        - "&#fb9700&lN&#fb9404&le&#fb9108&ly&#fc8f0c&lB&#fc8c10&lr&#fc8914&lo&#fc8619&la&#fc831d&ld&#fc8021&lc&#fd7e25&la&#fd7b29&ls&#fd782d&lt &7» &fС вашего баланса было списано {count} монет!"
-      dont_have:
-        text:
-          - "&#fb9700&lN&#fb9404&le&#fb9108&ly&#fc8f0c&lB&#fc8c10&lr&#fc8914&lo&#fc8619&la&#fc831d&ld&#fc8021&lc&#fd7e25&la&#fd7b29&ls&#fd782d&lt &7» &fНа вашем балансе недостаточно монет!"
+    # Право доступа
+    permission: "ney_broadcast.bc"
+    # Максимальная длина сообщения
+    max_length: 90
+    # Стоимость
+    cost: 0
 
-    size: 90
-    text:
-      - '&c'
-      - '&c &7[&#ff4242ОБЪЯВЛЕНИЕ&7] &fАвтор: &b%player% '
-      - '&c &fТекст &7» &c%message%'
-      - '&c'
-    usage:
-      text:
-        - "&#fb9700&lN&#fb9404&le&#fb9108&ly&#fc8f0c&lB&#fc8c10&lr&#fc8914&lo&#fc8619&la&#fc831d&ld&#fc8021&lc&#fd7e25&la&#fd7b29&ls&#fd782d&lt &7» &fИспользуйте - &e<bc/broadcast> [текст]"
-    and:
-      text:
-        - "&#fb9700&lN&#fb9404&le&#fb9108&ly&#fc8f0c&lB&#fc8c10&lr&#fc8914&lo&#fc8619&la&#fc831d&ld&#fc8021&lc&#fd7e25&la&#fd7b29&ls&#fd782d&lt &7» &cНельзя создавать объявления, которые содержат символ &"
+    # Сообщения
+    messages:
+      usage: "&eИспользуйте: /bc [текст]"
+      insufficient_funds: "&fНа вашем балансе недостаточно монет!"
+      payment_success: "&fС вашего баланса было списано {count} монет!"
+
+    # Шаблон сообщения для рассылки
+    broadcast_template:
+      - "&c"
+      - "&c &7[#ff4242ОБЪЯВЛЕНИЕ&7] &fАвтор: &b%player%"
+      - "&c &fТекст &7» &c%message%"
+      - "&c"
+
+    # Настройки звука
     sound:
       enabled: true
-      type: BLOCK_NOTE_BLOCK_HAT
+      type: "BLOCK_NOTE_BLOCK_HAT"
       volume: 0.7
       pitch: 1.0
 
   ad:
-    enabled: true
 
-    money:
-      enabled: true #Включена ли оплата за отправку объявления
-      count: 1500 #Сколько денег будет снято через Vault после отправки объявления
-      text:
-        - "&#fb9700&lN&#fb9404&le&#fb9108&ly&#fc8f0c&lB&#fc8c10&lr&#fc8914&lo&#fc8619&la&#fc831d&ld&#fc8021&lc&#fd7e25&la&#fd7b29&ls&#fd782d&lt &7» &fС вашего баланса было списано {count} монет!"
-      dont_have:
-        text:
-          - "&#fb9700&lN&#fb9404&le&#fb9108&ly&#fc8f0c&lB&#fc8c10&lr&#fc8914&lo&#fc8619&la&#fc831d&ld&#fc8021&lc&#fd7e25&la&#fd7b29&ls&#fd782d&lt &7» &fНа вашем балансе недостаточно монет!"
+    permission: "ney_broadcast.ad"
+    max_length: 90
+    cost: 1500
 
-    size: 90
-    text:
-      - '&c'
-      - '&c &7[&#63ffefРЕКЛАМА&7] &fАвтор: &b%player% '
-      - '&c &fТекст &7» &c%message%'
-      - '&c'
-    usage:
-      text:
-        - "&#fb9700&lN&#fb9404&le&#fb9108&ly&#fc8f0c&lB&#fc8c10&lr&#fc8914&lo&#fc8619&la&#fc831d&ld&#fc8021&lc&#fd7e25&la&#fd7b29&ls&#fd782d&lt &7» &fИспользуйте - &e<ad/advertising> [текст]"
-    and:
-      text:
-        - "&#fb9700&lN&#fb9404&le&#fb9108&ly&#fc8f0c&lB&#fc8c10&lr&#fc8914&lo&#fc8619&la&#fc831d&ld&#fc8021&lc&#fd7e25&la&#fd7b29&ls&#fd782d&lt &7» &cНельзя создавать объявления, которые содержат символ &"
+    messages:
+      usage: "&eИспользуйте: /ad [текст]"
+      insufficient_funds: "&fНа вашем балансе недостаточно монет!"
+      payment_success: "&fС вашего баланса было списано {count} монет!"
+
+    broadcast_template:
+      - "&c"
+      - "&c &7[#63ffefРЕКЛАМА&7] &fАвтор: &b%player%"
+      - "&c &fТекст &7» &c%message%"
+      - "&c"
+
     sound:
       enabled: true
-      type: BLOCK_NOTE_BLOCK_HAT
+      type: "BLOCK_NOTE_BLOCK_HAT"
       volume: 0.7
       pitch: 1.0
 
   buy:
-    enabled: true
 
-    money:
-      enabled: true #Включена ли оплата за отправку объявления
-      count: 2000 #Сколько денег будет снято через Vault после отправки объявления
-      text:
-        - "&#fb9700&lN&#fb9404&le&#fb9108&ly&#fc8f0c&lB&#fc8c10&lr&#fc8914&lo&#fc8619&la&#fc831d&ld&#fc8021&lc&#fd7e25&la&#fd7b29&ls&#fd782d&lt &7» &fС вашего баланса было списано {count} монет!"
-      dont_have:
-        text:
-          - "&#fb9700&lN&#fb9404&le&#fb9108&ly&#fc8f0c&lB&#fc8c10&lr&#fc8914&lo&#fc8619&la&#fc831d&ld&#fc8021&lc&#fd7e25&la&#fd7b29&ls&#fd782d&lt &7» &fНа вашем балансе недостаточно монет!"
+    permission: "ney_broadcast.buy"
+    max_length: 90
+    cost: 2000
 
-    size: 90
-    text:
-      - '&c'
-      - '&c &7[&#8642fcПОКУПКА&7] &fАвтор: &b%player% '
-      - '&c &fТекст &7» &c%message%'
-      - '&c'
-    usage:
-      text:
-        - "&#fb9700&lN&#fb9404&le&#fb9108&ly&#fc8f0c&lB&#fc8c10&lr&#fc8914&lo&#fc8619&la&#fc831d&ld&#fc8021&lc&#fd7e25&la&#fd7b29&ls&#fd782d&lt &7» &fИспользуйте - &e/<bc/broadcast> [текст]"
-    and:
-      text:
-        - "&#fb9700&lN&#fb9404&le&#fb9108&ly&#fc8f0c&lB&#fc8c10&lr&#fc8914&lo&#fc8619&la&#fc831d&ld&#fc8021&lc&#fd7e25&la&#fd7b29&ls&#fd782d&lt &7» &cНельзя создавать объявления, которые содержат символ &"
+    messages:
+      usage: "&eИспользуйте: /buy [текст]"
+      insufficient_funds: "&fНа вашем балансе недостаточно монет!"
+      payment_success: "&fС вашего баланса было списано {count} монет!"
+
+    broadcast_template:
+      - "&c"
+      - "&c &7[#8642fcПОКУПКА&7] &fАвтор: &b%player%"
+      - "&c &fТекст &7» &c%message%"
+      - "&c"
+
     sound:
       enabled: true
-      type: BLOCK_NOTE_BLOCK_HAT
+      type: "BLOCK_NOTE_BLOCK_HAT"
       volume: 0.7
       pitch: 1.0
