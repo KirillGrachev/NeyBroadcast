@@ -15,7 +15,6 @@ public class ConfigManager {
     private final NeyBroadcast plugin;
     private FileConfiguration config;
 
-    private static final String PATH_ENABLED = "enabled";
     private static final String PATH_MSG_NO_CONSOLE = "messages.no_console";
     private static final String PATH_MSG_NO_PERMISSION = "messages.no_permission";
     private static final String PATH_MSG_COLOR_CODE = "messages.contains_color_code";
@@ -56,7 +55,6 @@ public class ConfigManager {
     private static final String PATH_BUY_MSG_INSUFFICIENT = "commands.buy.messages.insufficient_funds";
     private static final String PATH_BUY_MSG_SUCCESS = "commands.buy.messages.payment_success";
 
-    private boolean enabled;
     private String msgNoConsole, msgNoPermission, msgColorCode;
 
     private double bcCost, adCost, buyCost;
@@ -92,8 +90,6 @@ public class ConfigManager {
     }
 
     private void cacheConfigValues() {
-
-        enabled = config.getBoolean(PATH_ENABLED, true);
 
         msgNoConsole = HexColorUtil.color(config.getString(PATH_MSG_NO_CONSOLE, "&cТолько для игроков!"));
         msgNoPermission = HexColorUtil.color(config.getString(PATH_MSG_NO_PERMISSION, "&cНет прав!"));
@@ -142,8 +138,6 @@ public class ConfigManager {
                 .map(HexColorUtil::color)
                 .collect(Collectors.toList());
     }
-
-    public boolean isEnabled() { return enabled; }
 
     public double getCost(@NotNull String command) {
         return switch (command.toLowerCase()) {

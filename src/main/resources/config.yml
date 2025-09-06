@@ -8,9 +8,6 @@
 # Разработчик - https://t.me/NeyOff
 # Права: ney_broadcast.ad, ney_broadcast.buy, ney_broadcast.bc
 
-# Включает или отключает работу всех команд плагина
-enabled: true
-
 # Общие сообщения (глобальные для всех команд)
 messages:
   no_console: "&cЭту команду можно использовать только от имени игрока!"
