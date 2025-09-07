@@ -118,8 +118,8 @@ commands:
 ```
 
 **PS: If you like the plugin, give it a star on GitHub (Clickable):**
-<a href="https://github.com/KirillGrachev/NeyUPCrystalDamage" target="_blank" rel="noopener noreferrer">
-  <img width="768" height="512" alt="NeyUPCrystalDamage GitHub Repository" src="https://github.com/user-attachments/assets/071ca426-f1b4-426d-89b5-c449a31f0c64" />
+<a href="https://github.com/KirillGrachev/NeyBroadcast" target="_blank" rel="noopener noreferrer">
+  <img width="768" height="512" alt="NeyBroadcast GitHub Repository" src="https://github.com/user-attachments/assets/071ca426-f1b4-426d-89b5-c449a31f0c64" />
 </a>
 
 **Photos:**
