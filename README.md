@@ -122,7 +122,7 @@ commands:
   <img width="768" height="512" alt="NeyUPCrystalDamage GitHub Repository" src="https://github.com/user-attachments/assets/071ca426-f1b4-426d-89b5-c449a31f0c64" />
 </a>
 
-Photos:
+**Photos:**
 <img width="1920" height="1080" alt="image" src="https://github.com/user-attachments/assets/723ba389-44ac-466f-9b5c-5812d2076cc7" />
 <img width="1920" height="1080" alt="image" src="https://github.com/user-attachments/assets/a1fab741-248c-4061-8438-4adc721c7477" />
 <img width="1920" height="1080" alt="image" src="https://github.com/user-attachments/assets/cf1c8bd0-8101-4ffb-b193-5dee4825902b" />
