@@ -1,8 +1,11 @@
 Tired of boring, monotonous alerts? Want every event to make players excited? Then **NeyBroadcast** is exactly what you need. It's not just a message plugin - it's a full-fledged alert/purchase/advertising system designed to turn your server into a lively, breathing community where every player feels a part of something bigger.
 
 **NeyBroadcast** combines three key features that used to require three different plugins:
+
 **✅ Alerts** - important news, events, and announcements.
+
 **✅ Ads** - promotion of teams, events, store.
+
 **✅ Purchases** - purchase of in-game items.
 
 **All this** - with support for **HEX** colors, integration with Vault and flexible configuration via config.yml. You yourself decide how messages will look: text, color, sound, maximum length - everything is under your control.
@@ -114,7 +117,10 @@ commands:
       pitch: 1.0
 ```
 
-PS: If you like the plugin, give it a star on GitHub (Clickable):
+**PS: If you like the plugin, give it a star on GitHub (Clickable):**
+<a href="https://github.com/KirillGrachev/NeyUPCrystalDamage" target="_blank" rel="noopener noreferrer">
+  <img width="768" height="512" alt="NeyUPCrystalDamage GitHub Repository" src="https://github.com/user-attachments/assets/071ca426-f1b4-426d-89b5-c449a31f0c64" />
+</a>
 
 Photos:
 <img width="1920" height="1080" alt="image" src="https://github.com/user-attachments/assets/723ba389-44ac-466f-9b5c-5812d2076cc7" />
