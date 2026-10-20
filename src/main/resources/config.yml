@@ -1,94 +1,215 @@
-# _   _            ____                      _               _
-#| \ | | ___ _   _| __ ) _ __ ___   __ _  __| | ___ __ _ ___| |_
-#|  \| |/ _ \ | | |  _ \| '__/ _ \ / _` |/ _` |/ __/ _` / __| __|
-#| |\  |  __/ |_| | |_) | | | (_) | (_| | (_| | (_| (_| \__ \ |_
-#|_| \_|\___|\__, |____/|_|  \___/ \__,_|\__,_|\___\__,_|___/\__|
-#            |___/
+# NeyBroadcast - paid broadcast channels: announcements, advertisements
+# and purchases.
+#
+# PLACEHOLDERS - work in every text of this file:
+#
+#   Channel messages (usage, insufficient_funds, payment_success)
+#     {channel}           command name of the channel (bc, ad, buy)
+#     {count}             charged amount as a whole number
+#     {cost}              charged amount as a whole number (alias)
+#     {player}            name of the sender
+#     {player_name}       name of the sender (1.x spelling)
+#
+#   Templates (channels.<name>.template)
+#     {player}, %player%      name of the sender
+#     {message}, %message%    text of the broadcast
+#
+#   Service (info, reload)
+#     {version}           plugin version from plugin.yml
+#     {time}              reload time, ms
+#     {channels}          comma-separated list of the enabled channels
+#     {total}             total number of channels
+#     {economy}           economy state as a state_on / state_off word
+#     {provider}          economy provider name, or "none"
+#     {permissions}       permissions.enabled as a state word
+#     {prefix}            messages.prefix
+#
+# HEX colors are supported everywhere: #RRGGBB and &#RRGGBB.
+# The %...% placeholder spellings are the 1.x ones: configs from 1.x keep
+# working without edits (the whole commands.* section is read when
+# channels.* is absent).
 
-# Разработчик - https://t.me/NeyOff
-# Права: ney_broadcast.ad, ney_broadcast.buy, ney_broadcast.bc
+settings:
 
-# Общие сообщения (глобальные для всех команд)
-messages:
-  no_console: "&cЭту команду можно использовать только от имени игрока!"
-  no_permission: "&cУ вас нет прав на использование этой команды!"
-  contains_color_code: "&cНельзя использовать символы & или § в сообщении!"
-  too_large: "&cСообщение не должно быть более {length} символов"
+  enabled: true # Master switch. If false - no channel broadcasts anything
 
-# Настройки для каждой команды
-commands:
+  # Tab-completion suggestions for the first argument of /bc, /ad and /buy
+  suggestions:
+    - "Hello everyone!"
+    - "Come join our server!"
+    - "Up to 50% off today!"
+
+permissions:
+
+  enabled: true # Enable the permission system: the channel nodes below become active
+
+  # Node of the /neybroadcast control command (reload, info)
+  reload: "neybroadcast.reload"
+
+# Each channel is a separate paid broadcast: its own permission, price,
+# length limit, template and sound.
+channels:
 
   bc:
 
-    # Право доступа
+    enabled: true # If false - the channel refuses to broadcast
     permission: "ney_broadcast.bc"
-    # Максимальная длина сообщения
-    max_length: 90
-    # Стоимость
-    cost: 0
+    max_length: 90 # Maximum length of the player text (template excluded)
+    cost: 0.0 # Price of one broadcast; 0 makes the channel free
 
-    # Сообщения
-    messages:
-      usage: "&eИспользуйте: /bc [текст]"
-      insufficient_funds: "&fНа вашем балансе недостаточно монет!"
-      payment_success: "&fС вашего баланса было списано {count} монет!"
+    # Lines sent to EVERY online player. Colored after the placeholders are
+    # substituted, so HEX codes typed by players work inside {message}.
+    template:
+      - ""
+      - "&7[#ff4242ANNOUNCEMENT&7] &fAuthor: &b{player}"
+      - "&7Text &8» &f{message}"
+      - ""
 
-    # Шаблон сообщения для рассылки
-    broadcast_template:
-      - "&c"
-      - "&c &7[#ff4242ОБЪЯВЛЕНИЕ&7] &fАвтор: &b%player%"
-      - "&c &fТекст &7» &c%message%"
-      - "&c"
-
-    # Настройки звука
     sound:
-      enabled: true
+      enabled: true # Played to the author of the broadcast
       type: "BLOCK_NOTE_BLOCK_HAT"
       volume: 0.7
       pitch: 1.0
+
+    messages:
+      usage:
+        enabled: true
+        text: "{prefix}&#8ce0ffUsage: /bc [text]"
+      insufficient_funds:
+        enabled: true
+        text: "{prefix}&#ff6b6bYou do not have enough coins: {cost} required."
+      payment_success:
+        enabled: true
+        text: "{prefix}&#9dff8cCharged {count} coins from your balance."
 
   ad:
 
+    enabled: true
     permission: "ney_broadcast.ad"
     max_length: 90
-    cost: 1500
+    cost: 1500.0
 
-    messages:
-      usage: "&eИспользуйте: /ad [текст]"
-      insufficient_funds: "&fНа вашем балансе недостаточно монет!"
-      payment_success: "&fС вашего баланса было списано {count} монет!"
-
-    broadcast_template:
-      - "&c"
-      - "&c &7[#63ffefРЕКЛАМА&7] &fАвтор: &b%player%"
-      - "&c &fТекст &7» &c%message%"
-      - "&c"
+    template:
+      - ""
+      - "&7[#63ffefADVERTISEMENT&7] &fAuthor: &b{player}"
+      - "&7Text &8» &f{message}"
+      - ""
 
     sound:
       enabled: true
       type: "BLOCK_NOTE_BLOCK_HAT"
       volume: 0.7
       pitch: 1.0
+
+    messages:
+      usage:
+        enabled: true
+        text: "{prefix}&#8ce0ffUsage: /ad [text]"
+      insufficient_funds:
+        enabled: true
+        text: "{prefix}&#ff6b6bYou do not have enough coins: {cost} required."
+      payment_success:
+        enabled: true
+        text: "{prefix}&#9dff8cCharged {count} coins from your balance."
 
   buy:
 
+    enabled: true
     permission: "ney_broadcast.buy"
     max_length: 90
-    cost: 2000
+    cost: 2000.0
 
-    messages:
-      usage: "&eИспользуйте: /buy [текст]"
-      insufficient_funds: "&fНа вашем балансе недостаточно монет!"
-      payment_success: "&fС вашего баланса было списано {count} монет!"
-
-    broadcast_template:
-      - "&c"
-      - "&c &7[#8642fcПОКУПКА&7] &fАвтор: &b%player%"
-      - "&c &fТекст &7» &c%message%"
-      - "&c"
+    template:
+      - ""
+      - "&7[#8642fcPURCHASE&7] &fAuthor: &b{player}"
+      - "&7Text &8» &f{message}"
+      - ""
 
     sound:
       enabled: true
       type: "BLOCK_NOTE_BLOCK_HAT"
       volume: 0.7
       pitch: 1.0
+
+    messages:
+      usage:
+        enabled: true
+        text: "{prefix}&#8ce0ffUsage: /buy [text]"
+      insufficient_funds:
+        enabled: true
+        text: "{prefix}&#ff6b6bYou do not have enough coins: {cost} required."
+      payment_success:
+        enabled: true
+        text: "{prefix}&#9dff8cCharged {count} coins from your balance."
+
+messages:
+
+  enabled: true # Master switch for all plugin messages
+  prefix: "" # Substituted into {prefix} inside the texts (empty = no prefix)
+
+  # Word-fragments for the state placeholders inside info (not standalone
+  # messages): /neybroadcast info assembles lines like "Economy: <state_on|state_off>"
+  state_on:
+    enabled: true
+    text: "&aenabled"
+
+  state_off:
+    enabled: true
+    text: "&cdisabled"
+
+  # Channel commands are player-only: the payment is taken from a balance
+  no_console:
+    enabled: true
+    text: "{prefix}&#ff6b6bOnly players can use the broadcast channels."
+
+  no_permission:
+    enabled: true
+    text: "{prefix}&#ff6b6bYou do not have permission to do this."
+
+  # Player text must stay plain: & and § are rejected, HEX (#RRGGBB) passes
+  contains_color_code:
+    enabled: true
+    text: "{prefix}&#ff6b6bThe message must not contain color codes (& or §)."
+
+  too_large:
+    enabled: true
+    text: "{prefix}&#ff6b6bThe message must not be longer than {length} characters."
+
+  # settings.enabled: false
+  disabled:
+    enabled: true
+    text: "{prefix}&#ff6b6bNeyBroadcast is disabled in the configuration."
+
+  # channels.<name>.enabled: false
+  channel_disabled:
+    enabled: true
+    text: "{prefix}&#ff6b6bThe /{channel} channel is disabled."
+
+  # Paid channel used while no Vault economy provider is connected
+  economy_unavailable:
+    enabled: true
+    text: "{prefix}&#ff6b6bNo economy provider is connected - paid channels cannot work."
+
+  # The economy plugin rejected the withdrawal
+  payment_failed:
+    enabled: true
+    text: "{prefix}&#ff6b6bThe payment did not go through: {error}"
+
+  usage:
+    enabled: true
+    text:
+      - "{prefix}&#8ce0ffNeyBroadcast commands:"
+      - "&f/neybroadcast reload &8- &7reload the configuration"
+      - "&f/neybroadcast info &8- &7channels, economy and permission state"
+
+  reload:
+    enabled: true
+    text: "{prefix}&#9dff8cConfiguration reloaded &7({time} ms, {channels} of {total} channels enabled)."
+
+  info:
+    enabled: true
+    text:
+      - "{prefix}&7Version: &f{version}"
+      - "&7Channels: &f{channels}"
+      - "&7Economy: &f{economy} &8({provider})"
+      - "&7Permissions: &f{permissions}"

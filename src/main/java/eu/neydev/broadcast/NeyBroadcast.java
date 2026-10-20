@@ -4,6 +4,7 @@ import eu.neydev.broadcast.tab.TabCompleter;
 import eu.neydev.broadcast.command.BroadcastCommand;
 import eu.neydev.broadcast.config.ConfigManager;
 import eu.neydev.broadcast.service.BroadcastService;
+import eu.neydev.broadcast.service.ConsoleService;
 import org.bukkit.Bukkit;
 import org.bukkit.plugin.RegisteredServiceProvider;
 import org.bukkit.plugin.java.JavaPlugin;
@@ -15,6 +16,7 @@ public final class NeyBroadcast extends JavaPlugin {
 
     private static NeyBroadcast instance;
     private Economy economy;
+    private ConsoleService consoleService;
     private ConfigManager configManager;
 
     @Override
@@ -23,7 +25,8 @@ public final class NeyBroadcast extends JavaPlugin {
         instance = this;
         saveDefaultConfig();
 
-        configManager = new ConfigManager(this);
+        consoleService = new ConsoleService(this);
+        configManager = new ConfigManager(this, consoleService);
 
         setupVault();
         if (economy == null) {
@@ -35,7 +38,7 @@ public final class NeyBroadcast extends JavaPlugin {
 
         }
 
-        BroadcastService broadcastService = new BroadcastService(configManager, economy);
+        BroadcastService broadcastService = new BroadcastService(this, configManager, economy);
         BroadcastCommand commands = new BroadcastCommand(broadcastService);
 
         TabCompleter tabCompleter = new TabCompleter();
@@ -95,6 +98,10 @@ public final class NeyBroadcast extends JavaPlugin {
 
     public Economy getEconomy() {
         return economy;
+    }
+
+    public ConsoleService getConsoleService() {
+        return consoleService;
     }
 
     public ConfigManager getConfigManager() {
