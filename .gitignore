@@ -1,0 +1,24 @@
+# Артефакты сборки
+target/
+dependency-reduced-pom.xml
+
+# IDE
+.idea/
+*.iml
+*.ipr
+*.iws
+.vscode/
+.settings/
+.classpath
+.project
+
+# ОС
+.DS_Store
+Thumbs.db
+
+# Локальные артефакты
+*.zip
+*.jar
+
+# Остатки смоук-теста
+server.pid
