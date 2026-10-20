@@ -1,4 +1,4 @@
-package com.ney.broadcast.tab;
+package eu.neydev.broadcast.tab;
 
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;

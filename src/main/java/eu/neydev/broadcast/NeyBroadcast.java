@@ -1,9 +1,9 @@
-package com.ney.broadcast;
+package eu.neydev.broadcast;
 
-import com.ney.broadcast.tab.TabCompleter;
-import com.ney.broadcast.command.BroadcastCommand;
-import com.ney.broadcast.config.ConfigManager;
-import com.ney.broadcast.service.BroadcastService;
+import eu.neydev.broadcast.tab.TabCompleter;
+import eu.neydev.broadcast.command.BroadcastCommand;
+import eu.neydev.broadcast.config.ConfigManager;
+import eu.neydev.broadcast.service.BroadcastService;
 import org.bukkit.Bukkit;
 import org.bukkit.plugin.RegisteredServiceProvider;
 import org.bukkit.plugin.java.JavaPlugin;
@@ -43,7 +43,14 @@ public final class NeyBroadcast extends JavaPlugin {
         registerBroadcastCommands(new String[] {"bc", "ad", "buy"},
                 commands, tabCompleter);
 
-        getLogger().info("NeyBroadcast successfully enabled!");
+        getLogger().info("NeyBroadcast started successfully.");
+
+    }
+
+    @Override
+    public void onDisable() {
+
+        getLogger().info("NeyBroadcast stopped.");
 
     }
 
@@ -79,6 +86,7 @@ public final class NeyBroadcast extends JavaPlugin {
             getCommand(cmd).setTabCompleter(tabCompleter);
 
         }
+
     }
 
     public static NeyBroadcast getInstance() {

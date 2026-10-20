@@ -1,7 +1,7 @@
-package com.ney.broadcast.config;
+package eu.neydev.broadcast.config;
 
-import com.ney.broadcast.util.HexColorUtil;
-import com.ney.broadcast.NeyBroadcast;
+import eu.neydev.broadcast.util.HexColorUtil;
+import eu.neydev.broadcast.NeyBroadcast;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.jetbrains.annotations.NotNull;

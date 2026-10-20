@@ -1,4 +1,4 @@
-package com.ney.broadcast.util;
+package eu.neydev.broadcast.util;
 
 import org.bukkit.ChatColor;
 import org.jetbrains.annotations.NotNull;

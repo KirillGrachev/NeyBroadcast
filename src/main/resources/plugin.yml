@@ -1,16 +1,21 @@
 name: NeyBroadcast
 version: '${project.version}'
-main: com.ney.broadcast.NeyBroadcast
-api-version: 1.13
+main: eu.neydev.broadcast.NeyBroadcast
+api-version: '1.20'
+author: Ney
+description: Paid broadcast channels - announcements, advertisements and purchases
+website: https://t.me/NeyOff
+softdepend: [Vault]
+
 commands:
-  ad:
-    description: Send an advertisement message to all players
-    usage: /<command> <message>
-    aliases: [advertising]
   bc:
     description: Send a global broadcast message
-    usage: /<command> <message>
+    usage: /bc <message>
     aliases: [broadcast]
+  ad:
+    description: Send an advertisement message to all players
+    usage: /ad <message>
+    aliases: [advertising]
   buy:
     description: Announce a purchase message to all players
-    usage: /<command> <message>
+    usage: /buy <message>

@@ -1,7 +1,7 @@
-package com.ney.broadcast.service;
+package eu.neydev.broadcast.service;
 
-import com.ney.broadcast.util.HexColorUtil;
-import com.ney.broadcast.config.ConfigManager;
+import eu.neydev.broadcast.util.HexColorUtil;
+import eu.neydev.broadcast.config.ConfigManager;
 import net.milkbowl.vault.economy.Economy;
 import org.bukkit.Bukkit;
 import org.bukkit.Sound;
@@ -11,7 +11,7 @@ import org.jetbrains.annotations.NotNull;
 
 import java.util.List;
 
-import static com.ney.broadcast.util.HexColorUtil.color;
+import static eu.neydev.broadcast.util.HexColorUtil.color;
 
 
 public class BroadcastService {

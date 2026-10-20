@@ -1,6 +1,6 @@
-package com.ney.broadcast.command;
+package eu.neydev.broadcast.command;
 
-import com.ney.broadcast.service.BroadcastService;
+import eu.neydev.broadcast.service.BroadcastService;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
