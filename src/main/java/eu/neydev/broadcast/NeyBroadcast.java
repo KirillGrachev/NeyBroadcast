@@ -1,14 +1,16 @@
 package eu.neydev.broadcast;
 
-import eu.neydev.broadcast.tab.TabCompleter;
 import eu.neydev.broadcast.command.BroadcastCommand;
+import eu.neydev.broadcast.command.CommandDispatcher;
+import eu.neydev.broadcast.command.NeyBroadcastCommand;
+import eu.neydev.broadcast.command.NeyBroadcastSubCommand;
+import eu.neydev.broadcast.command.sub.InfoSubCommand;
+import eu.neydev.broadcast.command.sub.ReloadSubCommand;
 import eu.neydev.broadcast.config.ConfigManager;
+import eu.neydev.broadcast.config.type.BroadcastChannel;
 import eu.neydev.broadcast.config.type.ConsoleMessage;
 import eu.neydev.broadcast.economy.EconomyService;
-import eu.neydev.broadcast.service.BroadcastService;
 import eu.neydev.broadcast.service.ConsoleService;
-import eu.neydev.broadcast.service.MessageService;
-import eu.neydev.broadcast.service.PermissionService;
 import org.bukkit.plugin.RegisteredServiceProvider;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.jetbrains.annotations.NotNull;
@@ -16,22 +18,32 @@ import org.jetbrains.annotations.Nullable;
 
 import net.milkbowl.vault.economy.Economy;
 
-public final class NeyBroadcast extends JavaPlugin {
+import java.util.List;
 
-    private static NeyBroadcast instance;
+/**
+ * Точка входа плагина.
+ *
+ * Класс не final осознанно (в 1.x он был final): интеграционные тесты
+ * MockBukkit грузят плагин через прокси-подкласс, а наследование JavaPlugin
+ * в продакшене никто не использует - подклассы создаются только тестовой
+ * средой.
+ */
+public class NeyBroadcast extends JavaPlugin {
+
+    private static final String COMMAND_CONTROL = "neybroadcast";
+
     private ConsoleService consoleService;
     private ConfigManager configManager;
     private EconomyService economyService;
+    private ServiceContainer services;
+    private @Nullable CommandDispatcher commandDispatcher;
 
     @Override
     public void onEnable() {
 
-        instance = this;
-        saveDefaultConfig();
-
-        consoleService = new ConsoleService(this);
-        configManager = new ConfigManager(this, consoleService);
-        economyService = new EconomyService(hookEconomy());
+        this.consoleService = new ConsoleService(this);
+        this.configManager = new ConfigManager(this, consoleService);
+        this.economyService = new EconomyService(hookEconomy());
 
         if (economyService.isAvailable()) {
             getLogger().info("Hooked Vault economy: " + economyService.getProviderName());
@@ -39,16 +51,24 @@ public final class NeyBroadcast extends JavaPlugin {
             consoleService.log(ConsoleMessage.ECONOMY_MISSING);
         }
 
-        MessageService messageService = new MessageService(configManager);
-        PermissionService permissionService = new PermissionService(configManager);
-        BroadcastService broadcastService = new BroadcastService(this, configManager,
-                messageService, permissionService, economyService);
-        BroadcastCommand commands = new BroadcastCommand(broadcastService);
+        this.services = new ServiceContainer(this, configManager, consoleService, economyService);
 
-        TabCompleter tabCompleter = new TabCompleter();
+        this.commandDispatcher = new CommandDispatcher(this, consoleService);
 
-        registerBroadcastCommands(new String[] {"bc", "ad", "buy"},
-                commands, tabCompleter);
+        BroadcastCommand channelCommand = new BroadcastCommand(
+                services.getBroadcastService(),
+                configManager,
+                services.getPermissionService());
+
+        for (BroadcastChannel channel : BroadcastChannel.values()) {
+            commandDispatcher.registerCommand(channel.getCommandName(), channelCommand);
+        }
+
+        commandDispatcher.registerCommand(COMMAND_CONTROL, new NeyBroadcastCommand(
+                services.getMessageService(),
+                services.getPermissionService(),
+                buildSubCommands()
+        ));
 
         getLogger().info("NeyBroadcast started successfully.");
 
@@ -56,6 +76,16 @@ public final class NeyBroadcast extends JavaPlugin {
 
     @Override
     public void onDisable() {
+
+        if (commandDispatcher != null) {
+
+            for (BroadcastChannel channel : BroadcastChannel.values()) {
+                commandDispatcher.unregisterCommand(channel.getCommandName());
+            }
+
+            commandDispatcher.unregisterCommand(COMMAND_CONTROL);
+
+        }
 
         getLogger().info("NeyBroadcast stopped.");
 
@@ -80,21 +110,16 @@ public final class NeyBroadcast extends JavaPlugin {
 
     }
 
-    private void registerBroadcastCommands(String @NotNull [] commands,
-                                           BroadcastCommand broadcastCommand,
-                                           TabCompleter tabCompleter) {
-
-        for (String cmd : commands) {
-
-            getCommand(cmd).setExecutor(broadcastCommand);
-            getCommand(cmd).setTabCompleter(tabCompleter);
-
-        }
-
-    }
-
-    public static NeyBroadcast getInstance() {
-        return instance;
+    /**
+     * Собирает подкоманды: команда получает зависимости из контейнера,
+     * а не тянет их из плагина сама.
+     */
+    private @NotNull List<NeyBroadcastSubCommand> buildSubCommands() {
+        return List.of(
+                new ReloadSubCommand(configManager, services.getMessageService()),
+                new InfoSubCommand(this, configManager, economyService,
+                        services.getMessageService())
+        );
     }
 
     public ConsoleService getConsoleService() {
@@ -108,4 +133,9 @@ public final class NeyBroadcast extends JavaPlugin {
     public EconomyService getEconomyService() {
         return economyService;
     }
+
+    public ServiceContainer getServices() {
+        return services;
+    }
+
 }

@@ -19,3 +19,29 @@ commands:
   buy:
     description: Announce a purchase message to all players
     usage: /buy <message>
+  neybroadcast:
+    description: NeyBroadcast control command
+    usage: /neybroadcast <reload|info>
+    aliases: [nb]
+
+permissions:
+  ney_broadcast.bc:
+    description: Send announcements via /bc
+    default: true
+  ney_broadcast.ad:
+    description: Send advertisements via /ad
+    default: true
+  ney_broadcast.buy:
+    description: Announce purchases via /buy
+    default: true
+  neybroadcast.reload:
+    description: Reload the configuration and read the current state
+    default: op
+  neybroadcast.admin:
+    description: All NeyBroadcast permissions
+    default: op
+    children:
+      ney_broadcast.bc: true
+      ney_broadcast.ad: true
+      ney_broadcast.buy: true
+      neybroadcast.reload: true

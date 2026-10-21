@@ -56,28 +56,11 @@ public class BroadcastService {
     }
 
     /**
-     * Обрабатывает вызов команды канала по ее имени.
-     *
-     * @param sender      отправитель команды
-     * @param commandName каноническое имя команды
-     * @param args        аргументы команды
-     */
-    public void handleCommand(@NotNull CommandSender sender,
-                              @NotNull String commandName,
-                              String @NotNull [] args) {
-
-        BroadcastChannel channel = BroadcastChannel.fromCommand(commandName);
-
-        if (channel == null) {
-            return;
-        }
-
-        handle(channel, sender, args);
-
-    }
-
-    /**
      * Проводит текст игрока через все проверки канала и рассылает его.
+     *
+     * Канал приходит от маршрутизатора команд типизированным: поиск по
+     * строке имени команды выполняется один раз в {@code BroadcastCommand},
+     * а не в каждом геттере конфигурации, как в 1.x.
      *
      * @param channel канал рассылки
      * @param sender  отправитель команды
