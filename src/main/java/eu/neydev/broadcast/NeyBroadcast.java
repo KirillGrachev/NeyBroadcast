@@ -5,6 +5,8 @@ import eu.neydev.broadcast.command.BroadcastCommand;
 import eu.neydev.broadcast.config.ConfigManager;
 import eu.neydev.broadcast.service.BroadcastService;
 import eu.neydev.broadcast.service.ConsoleService;
+import eu.neydev.broadcast.service.MessageService;
+import eu.neydev.broadcast.service.PermissionService;
 import org.bukkit.Bukkit;
 import org.bukkit.plugin.RegisteredServiceProvider;
 import org.bukkit.plugin.java.JavaPlugin;
@@ -38,7 +40,10 @@ public final class NeyBroadcast extends JavaPlugin {
 
         }
 
-        BroadcastService broadcastService = new BroadcastService(this, configManager, economy);
+        MessageService messageService = new MessageService(configManager);
+        PermissionService permissionService = new PermissionService(configManager);
+        BroadcastService broadcastService = new BroadcastService(this, configManager,
+                messageService, permissionService, economy);
         BroadcastCommand commands = new BroadcastCommand(broadcastService);
 
         TabCompleter tabCompleter = new TabCompleter();

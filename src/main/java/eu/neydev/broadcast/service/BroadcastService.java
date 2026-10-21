@@ -14,7 +14,6 @@ import org.bukkit.plugin.Plugin;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
 /**
@@ -34,14 +33,20 @@ public class BroadcastService {
 
     private final Plugin plugin;
     private final BroadcastConfig config;
+    private final MessageService messageService;
+    private final PermissionService permissionService;
     private final Economy economy;
 
     public BroadcastService(@NotNull Plugin plugin,
                             @NotNull BroadcastConfig config,
+                            @NotNull MessageService messageService,
+                            @NotNull PermissionService permissionService,
                             @NotNull Economy economy) {
 
         this.plugin = plugin;
         this.config = config;
+        this.messageService = messageService;
+        this.permissionService = permissionService;
         this.economy = economy;
 
     }
@@ -80,14 +85,14 @@ public class BroadcastService {
 
         if (!config.isPluginEnabled()) {
 
-            send(sender, MessageKey.DISABLED, Map.of());
+            messageService.send(sender, MessageKey.DISABLED);
             return;
 
         }
 
         if (!config.isChannelEnabled(channel)) {
 
-            send(sender, MessageKey.CHANNEL_DISABLED,
+            messageService.send(sender, MessageKey.CHANNEL_DISABLED,
                     Map.of("channel", channel.getCommandName()));
             return;
 
@@ -95,14 +100,14 @@ public class BroadcastService {
 
         if (!(sender instanceof Player player)) {
 
-            send(sender, MessageKey.NO_CONSOLE, Map.of());
+            messageService.send(sender, MessageKey.NO_CONSOLE);
             return;
 
         }
 
         if (args.length == 0) {
 
-            send(player, channel, ChannelMessageKey.USAGE,
+            messageService.send(player, channel, ChannelMessageKey.USAGE,
                     Map.of("channel", channel.getCommandName()));
             return;
 
@@ -110,16 +115,16 @@ public class BroadcastService {
 
         String message = String.join(" ", args);
 
-        if (!hasChannelPermission(player, channel)) {
+        if (!permissionService.has(player, PermissionNode.forChannel(channel))) {
 
-            send(player, MessageKey.NO_PERMISSION, Map.of());
+            messageService.send(player, MessageKey.NO_PERMISSION);
             return;
 
         }
 
         if (message.contains("&") || message.contains("§")) {
 
-            send(player, MessageKey.CONTAINS_COLOR_CODE, Map.of());
+            messageService.send(player, MessageKey.CONTAINS_COLOR_CODE);
             return;
 
         }
@@ -128,7 +133,7 @@ public class BroadcastService {
 
         if (message.length() > maxLength) {
 
-            send(player, MessageKey.TOO_LARGE,
+            messageService.send(player, MessageKey.TOO_LARGE,
                     Map.of("length", String.valueOf(maxLength)));
             return;
 
@@ -138,7 +143,7 @@ public class BroadcastService {
 
         if (cost > 0.0 && economy.getBalance(player) < cost) {
 
-            send(player, channel, ChannelMessageKey.INSUFFICIENT_FUNDS,
+            messageService.send(player, channel, ChannelMessageKey.INSUFFICIENT_FUNDS,
                     moneyPlaceholders(player, channel, cost));
             return;
 
@@ -148,7 +153,7 @@ public class BroadcastService {
 
             economy.withdrawPlayer(player, cost);
 
-            send(player, channel, ChannelMessageKey.PAYMENT_SUCCESS,
+            messageService.send(player, channel, ChannelMessageKey.PAYMENT_SUCCESS,
                     moneyPlaceholders(player, channel, cost));
 
         }
@@ -197,17 +202,6 @@ public class BroadcastService {
 
     }
 
-    private boolean hasChannelPermission(@NotNull Player player,
-                                         @NotNull BroadcastChannel channel) {
-
-        if (!config.arePermissionsEnabled()) {
-            return true;
-        }
-
-        return player.hasPermission(config.getPermission(PermissionNode.forChannel(channel)));
-
-    }
-
     /**
      * Плейсхолдеры денежных сообщений канала.
      *
@@ -228,56 +222,6 @@ public class BroadcastService {
         placeholders.put("cost", String.valueOf((int) cost));
 
         return placeholders;
-
-    }
-
-    private void send(@NotNull CommandSender sender,
-                      @NotNull MessageKey key,
-                      @NotNull Map<String, String> placeholders) {
-
-        for (String line : build(config.getMessages(key), placeholders)) {
-            sender.sendMessage(line);
-        }
-
-    }
-
-    private void send(@NotNull CommandSender sender,
-                      @NotNull BroadcastChannel channel,
-                      @NotNull ChannelMessageKey key,
-                      @NotNull Map<String, String> placeholders) {
-
-        for (String line : build(config.getMessages(channel, key), placeholders)) {
-            sender.sendMessage(line);
-        }
-
-    }
-
-    private @NotNull List<String> build(@NotNull List<String> lines,
-                                        @NotNull Map<String, String> placeholders) {
-
-        if (lines.isEmpty() || !config.areMessagesEnabled()) {
-            return List.of();
-        }
-
-        Map<String, String> all = new HashMap<>(placeholders);
-        all.putIfAbsent("prefix", config.getMessagePrefix());
-
-        return lines.stream()
-                .map(line -> applyPlaceholders(line, all))
-                .toList();
-
-    }
-
-    private @NotNull String applyPlaceholders(@NotNull String line,
-                                              @NotNull Map<String, String> placeholders) {
-
-        String result = line;
-
-        for (Map.Entry<String, String> entry : placeholders.entrySet()) {
-            result = result.replace("{" + entry.getKey() + "}", entry.getValue());
-        }
-
-        return result;
 
     }
 
