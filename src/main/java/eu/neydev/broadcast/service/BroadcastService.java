@@ -6,8 +6,8 @@ import eu.neydev.broadcast.config.type.ChannelMessageKey;
 import eu.neydev.broadcast.config.type.MessageKey;
 import eu.neydev.broadcast.config.type.PermissionNode;
 import eu.neydev.broadcast.config.type.SoundSettings;
+import eu.neydev.broadcast.economy.EconomyService;
 import eu.neydev.broadcast.util.HexColorUtil;
-import net.milkbowl.vault.economy.Economy;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 import org.bukkit.plugin.Plugin;
@@ -23,7 +23,9 @@ import java.util.Map;
  * право, цветовые коды, длина, баланс, списание, рассылка, звук:
  * серверовладельцы знают этот порядок по текстам, которые получали их
  * игроки, и менять его без причины нельзя. Сверху добавлены только два
- * новых мастер-выключателя (плагин и канал).
+ * новых мастер-выключателя (плагин и канал) и отказ платного канала при
+ * неподключенной экономике - ветка, которой в 1.x не существовало, потому
+ * что там плагин без Vault не доживал до команды.
  *
  * Шаблон окрашивается ПОСЛЕ подстановки текста игрока: HEX-коды в тексте
  * игрока проходят тот же путь, что и в 1.x (символы & и § отклоняются
@@ -35,19 +37,19 @@ public class BroadcastService {
     private final BroadcastConfig config;
     private final MessageService messageService;
     private final PermissionService permissionService;
-    private final Economy economy;
+    private final EconomyService economyService;
 
     public BroadcastService(@NotNull Plugin plugin,
                             @NotNull BroadcastConfig config,
                             @NotNull MessageService messageService,
                             @NotNull PermissionService permissionService,
-                            @NotNull Economy economy) {
+                            @NotNull EconomyService economyService) {
 
         this.plugin = plugin;
         this.config = config;
         this.messageService = messageService;
         this.permissionService = permissionService;
-        this.economy = economy;
+        this.economyService = economyService;
 
     }
 
@@ -141,25 +143,60 @@ public class BroadcastService {
 
         double cost = config.getCost(channel);
 
-        if (cost > 0.0 && economy.getBalance(player) < cost) {
-
-            messageService.send(player, channel, ChannelMessageKey.INSUFFICIENT_FUNDS,
-                    moneyPlaceholders(player, channel, cost));
+        if (cost > 0.0 && !pay(channel, player, cost)) {
             return;
-
-        }
-
-        if (cost > 0.0) {
-
-            economy.withdrawPlayer(player, cost);
-
-            messageService.send(player, channel, ChannelMessageKey.PAYMENT_SUCCESS,
-                    moneyPlaceholders(player, channel, cost));
-
         }
 
         broadcast(channel, player, message);
         playSound(channel, player);
+
+    }
+
+    /**
+     * Проводит оплату канала: доступность экономики, баланс, списание.
+     *
+     * Список проверки повторяет 1.x (баланс до списания), но результат
+     * списания больше не выбрасывается: отклоненный EconomyResponse
+     * означает отказ всей рассылки - игрок не должен получать объявление
+     * бесплатно из-за того, что экономический плагин сказал «нет».
+     *
+     * @param channel канал рассылки
+     * @param player  плательщик
+     * @param cost    стоимость рассылки (больше нуля)
+     * @return true если оплата прошла и рассылку можно отправлять
+     */
+    private boolean pay(@NotNull BroadcastChannel channel,
+                        @NotNull Player player,
+                        double cost) {
+
+        if (!economyService.isAvailable()) {
+
+            messageService.send(player, MessageKey.ECONOMY_UNAVAILABLE);
+            return false;
+
+        }
+
+        if (!economyService.has(player, cost)) {
+
+            messageService.send(player, channel, ChannelMessageKey.INSUFFICIENT_FUNDS,
+                    moneyPlaceholders(player, channel, cost));
+            return false;
+
+        }
+
+        EconomyService.WithdrawResult result = economyService.withdraw(player, cost);
+
+        if (!result.success()) {
+
+            messageService.send(player, MessageKey.PAYMENT_FAILED,
+                    Map.of("error", result.error()));
+            return false;
+
+        }
+
+        messageService.send(player, channel, ChannelMessageKey.PAYMENT_SUCCESS,
+                moneyPlaceholders(player, channel, cost));
+        return true;
 
     }
 
@@ -205,9 +242,10 @@ public class BroadcastService {
     /**
      * Плейсхолдеры денежных сообщений канала.
      *
-     * {count} - целое число монет (формат 1.x), {cost} - то же значение
-     * в формате строки; {player} и {player_name} - имя автора рассылки
-     * ({player_name} - плейсхолдер 1.x, живые конфигурации содержат его).
+     * {count} - целое число монет (формат 1.x), {cost} - сумма,
+     * отформатированная экономическим плагином (символ валюты); {player} и
+     * {player_name} - имя автора рассылки ({player_name} - плейсхолдер 1.x,
+     * живые конфигурации содержат его).
      */
     private @NotNull Map<String, String> moneyPlaceholders(@NotNull Player player,
                                                            @NotNull BroadcastChannel channel,
@@ -219,7 +257,7 @@ public class BroadcastService {
         placeholders.put("player", player.getName());
         placeholders.put("player_name", player.getName());
         placeholders.put("count", String.valueOf((int) cost));
-        placeholders.put("cost", String.valueOf((int) cost));
+        placeholders.put("cost", economyService.format(cost));
 
         return placeholders;
 

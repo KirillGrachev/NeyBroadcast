@@ -6,7 +6,7 @@
 #   Channel messages (usage, insufficient_funds, payment_success)
 #     {channel}           command name of the channel (bc, ad, buy)
 #     {count}             charged amount as a whole number
-#     {cost}              charged amount as a whole number (alias)
+#     {cost}              charged amount formatted by the economy plugin
 #     {player}            name of the sender
 #     {player_name}       name of the sender (1.x spelling)
 #
