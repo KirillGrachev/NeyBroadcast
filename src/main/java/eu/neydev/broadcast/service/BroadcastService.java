@@ -7,25 +7,27 @@ import eu.neydev.broadcast.config.type.MessageKey;
 import eu.neydev.broadcast.config.type.PermissionNode;
 import eu.neydev.broadcast.config.type.SoundSettings;
 import eu.neydev.broadcast.economy.EconomyService;
+import eu.neydev.broadcast.event.BroadcastSendEvent;
 import eu.neydev.broadcast.util.HexColorUtil;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 import org.bukkit.plugin.Plugin;
 import org.jetbrains.annotations.NotNull;
 
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 /**
  * Сервис рассылки канала.
  *
- * Порядок проверок повторяет 1.x дословно - консоль, пустые аргументы,
- * право, цветовые коды, длина, баланс, списание, рассылка, звук:
- * серверовладельцы знают этот порядок по текстам, которые получали их
- * игроки, и менять его без причины нельзя. Сверху добавлены только два
- * новых мастер-выключателя (плагин и канал) и отказ платного канала при
- * неподключенной экономике - ветка, которой в 1.x не существовало, потому
- * что там плагин без Vault не доживал до команды.
+ * Порядок проверок повторяет 1.x - консоль, пустые аргументы, право,
+ * цветовые коды, длина, баланс, списание, рассылка, звук: серверовладельцы
+ * знают этот порядок по текстам, которые получали их игроки, и менять его
+ * без причины нельзя. Отличия три, и все документированы: мастер-выключатели
+ * (плагин и канал) проверяются первыми, между проверкой баланса и списанием
+ * публикуется {@link BroadcastSendEvent}, а результат списания проверяется.
  *
  * Шаблон окрашивается ПОСЛЕ подстановки текста игрока: HEX-коды в тексте
  * игрока проходят тот же путь, что и в 1.x (символы & и § отклоняются
@@ -143,31 +145,42 @@ public class BroadcastService {
 
         double cost = config.getCost(channel);
 
-        if (cost > 0.0 && !pay(channel, player, cost)) {
+        if (cost > 0.0 && !checkFunds(channel, player, cost)) {
             return;
         }
 
-        broadcast(channel, player, message);
+        List<String> lines = renderLines(channel, player, message);
+
+        BroadcastSendEvent event =
+                new BroadcastSendEvent(player, channel, message, lines, cost);
+        plugin.getServer().getPluginManager().callEvent(event);
+
+        if (event.isCancelled()) {
+            return;
+        }
+
+        if (cost > 0.0 && !charge(channel, player, cost)) {
+            return;
+        }
+
+        sendLines(lines);
         playSound(channel, player);
 
     }
 
     /**
-     * Проводит оплату канала: доступность экономики, баланс, списание.
-     *
-     * Список проверки повторяет 1.x (баланс до списания), но результат
-     * списания больше не выбрасывается: отклоненный EconomyResponse
-     * означает отказ всей рассылки - игрок не должен получать объявление
-     * бесплатно из-за того, что экономический плагин сказал «нет».
+     * Проверяет доступность экономики и баланс до публикации события:
+     * слушатели должны видеть только те рассылки, которые реально могут
+     * состояться.
      *
      * @param channel канал рассылки
      * @param player  плательщик
      * @param cost    стоимость рассылки (больше нуля)
-     * @return true если оплата прошла и рассылку можно отправлять
+     * @return true если деньги на рассылку есть
      */
-    private boolean pay(@NotNull BroadcastChannel channel,
-                        @NotNull Player player,
-                        double cost) {
+    private boolean checkFunds(@NotNull BroadcastChannel channel,
+                               @NotNull Player player,
+                               double cost) {
 
         if (!economyService.isAvailable()) {
 
@@ -183,6 +196,27 @@ public class BroadcastService {
             return false;
 
         }
+
+        return true;
+
+    }
+
+    /**
+     * Списывает оплату после события и до отправки строк.
+     *
+     * Результат списания больше не выбрасывается, как в 1.x: отклоненный
+     * EconomyResponse означает отказ всей рассылки - игрок не должен
+     * получать объявление бесплатно из-за того, что экономический плагин
+     * сказал «нет».
+     *
+     * @param channel канал рассылки
+     * @param player  плательщик
+     * @param cost    стоимость рассылки (больше нуля)
+     * @return true если оплата прошла и рассылку можно отправлять
+     */
+    private boolean charge(@NotNull BroadcastChannel channel,
+                           @NotNull Player player,
+                           double cost) {
 
         EconomyService.WithdrawResult result = economyService.withdraw(player, cost);
 
@@ -201,26 +235,38 @@ public class BroadcastService {
     }
 
     /**
-     * Рассылает строки шаблона всем игрокам в сети.
+     * Собирает готовые строки рассылки из шаблона канала.
      *
      * Окраска и подстановка выполняются построчно и в одном порядке с 1.x:
      * сначала плейсхолдеры, потом цвета - иначе HEX-коды из текста игрока
      * остались бы литералом.
      */
-    private void broadcast(@NotNull BroadcastChannel channel,
-                           @NotNull Player player,
-                           @NotNull String message) {
+    private @NotNull List<String> renderLines(@NotNull BroadcastChannel channel,
+                                              @NotNull Player player,
+                                              @NotNull String message) {
+
+        List<String> rendered = new ArrayList<>();
 
         for (String line : config.getTemplate(channel)) {
 
-            String rendered = HexColorUtil.color(line
+            rendered.add(HexColorUtil.color(line
                     .replace("{player}", player.getName())
                     .replace("%player%", player.getName())
                     .replace("{message}", message)
-                    .replace("%message%", message));
+                    .replace("%message%", message)));
 
-            for (Player online : plugin.getServer().getOnlinePlayers()) {
-                online.sendMessage(rendered);
+        }
+
+        return List.copyOf(rendered);
+
+    }
+
+    private void sendLines(@NotNull List<String> lines) {
+
+        for (Player online : plugin.getServer().getOnlinePlayers()) {
+
+            for (String line : lines) {
+                online.sendMessage(line);
             }
 
         }
