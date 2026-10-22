@@ -94,19 +94,29 @@ public class NeyBroadcast extends JavaPlugin {
     /**
      * Находит провайдер экономики Vault.
      *
-     * Регистрация в ServicesManager - единственная проверка: наличие самого
-     * Vault-плагина ничего не значит без провайдера, а провайдер без Vault
-     * не зарегистрируется. Порядок загрузки гарантирует softdepend в
-     * plugin.yml.
+     * Литерал Economy.class загружает класс Vault, а на сервере без Vault
+     * это NoClassDefFoundError посреди onEnable - плагин, который задуман
+     * работающим без экономики, не смог бы включиться вовсе. Поэтому весь
+     * поиск обернут в перехват ошибки линковки: нет классов Vault - нет и
+     * экономики, бесплатный канал это не волнует. Проверка по имени плагина
+     * (getPlugin("Vault")) не нужна: провайдер без Vault не зарегистрируется,
+     * а порядок загрузки гарантирует softdepend в plugin.yml.
      *
      * @return провайдер или null, если экономики на сервере нет
      */
     private @Nullable Economy hookEconomy() {
 
-        RegisteredServiceProvider<Economy> registration =
-                getServer().getServicesManager().getRegistration(Economy.class);
+        try {
 
-        return registration == null ? null : registration.getProvider();
+            RegisteredServiceProvider<Economy> registration =
+                    getServer().getServicesManager().getRegistration(Economy.class);
+
+            return registration == null ? null : registration.getProvider();
+
+        } catch (NoClassDefFoundError error) {
+            // Vault отсутствует на сервере: класс Economy не загрузить
+            return null;
+        }
 
     }
 
