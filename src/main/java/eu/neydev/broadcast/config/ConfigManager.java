@@ -315,7 +315,7 @@ public class ConfigManager implements BroadcastConfig {
             return DEFAULT_CHANNELS.get(channel);
         }
 
-        String basePath = sectionPath(channel, section);
+        String basePath = sectionPath(section);
         PermissionNode node = PermissionNode.forChannel(channel);
 
         Map<ChannelMessageKey, List<String>> messages = new EnumMap<>(ChannelMessageKey.class);
@@ -371,13 +371,11 @@ public class ConfigManager implements BroadcastConfig {
 
     /**
      * Возвращает фактический путь секции канала для сообщений консоли:
-     * секция могла приехать из старой ветки commands.*.
+     * секция могла приехать из старой ветки commands.*, и предупреждение
+     * обязано называть тот путь, который реально прочитан.
      */
-    private @NotNull String sectionPath(@NotNull BroadcastChannel channel,
-                                        @NotNull ConfigurationSection section) {
-        return section.getCurrentPath() == null
-                ? SECTION_CHANNELS + channel.getConfigKey()
-                : section.getCurrentPath();
+    private @NotNull String sectionPath(@NotNull ConfigurationSection section) {
+        return section.getCurrentPath();
     }
 
     private @NotNull String readPermission(@NotNull ConfigurationSection section,
@@ -508,15 +506,13 @@ public class ConfigManager implements BroadcastConfig {
 
     }
 
-    private static @Nullable Sound defaultSound() {
-
-        try {
-            return Sound.valueOf(SoundSettings.DEFAULT_TYPE);
-        } catch (IllegalArgumentException exception) {
-            // Ядро без этого звука: канал останется без звука, isPlayable() вернет false
-            return null;
-        }
-
+    /**
+     * Звук по умолчанию. api-version '1.20' гарантирует, что
+     * BLOCK_NOTE_BLOCK_HAT есть в перечислении (он там с 1.13), поэтому
+     * защитного catch здесь нет - на поддерживаемых ядрах он недостижим.
+     */
+    private static @NotNull Sound defaultSound() {
+        return Sound.valueOf(SoundSettings.DEFAULT_TYPE);
     }
 
     private int parsePositiveInt(@Nullable Object raw, int defaultValue, @NotNull String path) {
@@ -668,22 +664,17 @@ public class ConfigManager implements BroadcastConfig {
      * Читает сообщение в любой из двух форм: секция 2.0 (enabled/text)
      * или плоская строка 1.x на том же пути.
      *
-     * @param parent         секция-владелец (корень конфигурации для глобальных
-     *                       сообщений, секция канала для канальных) или null,
-     *                       если секции канала нет вовсе
+     * @param parent         секция-владелец: корень конфигурации для глобальных
+     *                       сообщений, секция канала для канальных
      * @param key            относительный путь сообщения
      * @param defaultEnabled включенность по умолчанию
      * @param defaultMessage дефолтный текст
      * @return окрашенные строки; пустой список, если сообщение выключено
      */
-    private @NotNull List<String> readMessageLines(@Nullable ConfigurationSection parent,
+    private @NotNull List<String> readMessageLines(@NotNull ConfigurationSection parent,
                                                    @NotNull String key,
                                                    boolean defaultEnabled,
                                                    @NotNull String defaultMessage) {
-
-        if (parent == null) {
-            return coloredLines(defaultMessage);
-        }
 
         ConfigurationSection section = parent.getConfigurationSection(key);
 

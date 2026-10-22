@@ -52,21 +52,19 @@ public enum PermissionNode {
     /**
      * Возвращает узел права, открывающий канал.
      *
+     * Switch исчерпывающий: новый канал в {@link BroadcastChannel} без
+     * своей ветки здесь не скомпилируется - пары перечислений не могут
+     * разойтись молча.
+     *
      * @param channel канал рассылки
      * @return узел права канала
      */
     public static @NotNull PermissionNode forChannel(@NotNull BroadcastChannel channel) {
-
-        for (PermissionNode node : values()) {
-            if (node.channel == channel) {
-                return node;
-            }
-        }
-
-        // Недостижимо: у каждого канала есть свой узел, перечисления
-        // дополняются только парами
-        throw new IllegalArgumentException("No permission node for channel " + channel);
-
+        return switch (channel) {
+            case BC -> BC;
+            case AD -> AD;
+            case BUY -> BUY;
+        };
     }
 
 }
