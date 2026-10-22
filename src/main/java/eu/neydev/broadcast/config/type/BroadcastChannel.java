@@ -42,6 +42,12 @@ public enum BroadcastChannel {
     private final String configKey;
     private final String commandName;
     private final double defaultCost;
+
+    /**
+     * List.of в аргументах конструктора неизменяем, но анализатор судит по
+     * объявленному типу - отсюда точечное подавление вместо замены типа.
+     */
+    @SuppressWarnings("ImmutableEnumChecker")
     private final List<String> defaultTemplate;
 
     BroadcastChannel(String configKey, String commandName,

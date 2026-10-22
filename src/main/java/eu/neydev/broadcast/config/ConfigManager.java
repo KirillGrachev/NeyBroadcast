@@ -86,7 +86,6 @@ public class ConfigManager implements BroadcastConfig {
      */
     private static final boolean DEFAULT_PERMISSIONS_ENABLED = true;
     private static final int DEFAULT_MAX_LENGTH = 90;
-    private static final double DEFAULT_COST = 0.0;
 
     /** Дефолтные варианты автодополнения: те же три фразы, что 1.x показывала из кода. */
     private static final List<String> DEFAULT_SUGGESTIONS = List.of(

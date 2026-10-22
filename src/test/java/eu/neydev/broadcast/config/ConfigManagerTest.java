@@ -59,10 +59,6 @@ class ConfigManagerTest {
 
     }
 
-    private ConfigManager manager() {
-        return manager("");
-    }
-
     private ConfigManager manager(String yaml) {
 
         writeConfig(yaml);
